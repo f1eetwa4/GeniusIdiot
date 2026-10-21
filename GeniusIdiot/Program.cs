@@ -36,21 +36,40 @@
                 }
             }
 
+
         }
 
-        private static bool IsCorrectAnswer(string[] questions, int[] answers, int i)
+        static bool IsCorrectAnswer(string[] questions, int[] answers, int i)
         {
             Console.WriteLine(questions[i]);
 
             Console.Write("Ваш ответ: ");
-            int userAnswer = int.Parse(Console.ReadLine());
+            string userAnswer = Console.ReadLine();
 
-            if (userAnswer == answers[i])
+            while (!IsNumber(userAnswer))
+            {
+                Console.WriteLine("Пожалуйста, введите число!");
+                userAnswer = Console.ReadLine();
+            }
+            
+            if (int.Parse(userAnswer) == answers[i])
             {
                 return true;
             }
 
             return false;
+        }
+
+        static bool IsNumber(string input)
+        {
+            foreach (char c in input)
+            {
+                if (c < '0' || c > '9')
+                {
+                    return false;
+                }
+            }
+            return true;
         }
 
         static string[] CreateQuestions()
