@@ -1,10 +1,14 @@
-﻿namespace GeniusIdiot
+﻿using System.IO;
+
+namespace GeniusIdiotConsoleApp
 {
     internal class Program
     {
         static void Main(string[] args)
         {
             UserStorage userStorage = new UserStorage();
+
+            string path = @"C:\Users\darka\source\repos\GeniusIdiot\GeniusIdiot\results.txt";
 
             while (true)
             {
@@ -13,10 +17,10 @@
                     Console.WriteLine("Хотите вывести все результаты тестирования?");
                     if (IsYes(Console.ReadLine()))
                     {
-                        userStorage.Print();
+                        PrintResults(path);
                     }
                 }
-                
+
                 Console.WriteLine("Пожалуйса, введите ваше ФИО");
                 string fullname = Console.ReadLine();
 
@@ -28,28 +32,26 @@
                     int[] answers = CreateAnswers();
                     Shuffle(questions, answers);
 
-                    int correctAnswersCount = 0;
-
                     for (int i = 0; i < questions.Length; i++)
                     {
                         if (IsCorrectAnswer(questions, answers, i))
                         {
-                            correctAnswersCount++;
+                            user.CorrectAnswersCount++;
                         }
                     }
 
                     Console.WriteLine();
 
-                    Console.WriteLine($"Количество правильных ответов: {correctAnswersCount}");
-                    user.CorrectAnswersCount = correctAnswersCount;
+                    Console.WriteLine($"Количество правильных ответов: {user.CorrectAnswersCount}");
 
-                    double percentage = (double)correctAnswersCount * 100 / answers.Length;
+                    double percentage = (double)user.CorrectAnswersCount * 100 / answers.Length;
 
                     string diagnosis = MakeDiagnosis(percentage);
                     user.Diagnosis = diagnosis;
                     Console.WriteLine($"{fullname}, ваш диагноз: {diagnosis}");
 
                     userStorage.Users.Add(user);
+                    WriteResultsToFile(path, user);
 
                     Console.WriteLine("Хотите пройти тест снова?");
                     if (!IsYes(Console.ReadLine()))
@@ -85,7 +87,6 @@
 
             return false;
         }
-
         static bool IsNumber(string input)
         {
             foreach (char c in input)
@@ -112,7 +113,7 @@
         }
         static int[] CreateAnswers()
         {
-            int[] answers = { 6, 9, 25, 60, 2 };
+            int[] answers = { 6, 9, 25, 60, 5 };
             return answers;
         }
         static void Shuffle(string[] questions, int[] answers)
@@ -153,6 +154,25 @@
                 return true;
             }
             return false;
+        }
+        static void WriteResultsToFile(string writePath, User user)
+        {
+
+            string text = string.Format("{0, -30} {1, -35} {2, -30}", user.FullName, user.CorrectAnswersCount, user.Diagnosis);
+            using (StreamWriter sw = new StreamWriter(writePath, true, System.Text.Encoding.Default))
+            {
+                sw.WriteLine(text);
+            }
+
+        }
+        static void PrintResults(string path)
+        {
+            Console.WriteLine("{0, -30} {1, -35} {2, -30}", "ФИО:", "Количество правильных ответов:", "Диагноз:");
+            using (StreamReader sr = new StreamReader(path))
+            {
+                Console.WriteLine(sr.ReadToEnd());
+            }
+
         }
     }
 }
