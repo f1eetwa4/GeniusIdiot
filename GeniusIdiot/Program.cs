@@ -6,33 +6,40 @@
         {
             Console.WriteLine("Введите имя пользователя");
             string name = Console.ReadLine();
-            while (true)
+            if (!string.IsNullOrEmpty(name))
             {
-                string[] questions = CreateQuestions();
-                int[] answers = CreateAnswers();
-                Shuffle(questions, answers);
-
-                int correctAnswersCount = 0;
-
-                for (int i = 0; i < 5; i++)
+                while (true)
                 {
-                    if (IsCorrectAnswer(questions, answers, i))
+                    string[] questions = CreateQuestions();
+                    int[] answers = CreateAnswers();
+                    Shuffle(questions, answers);
+
+                    int correctAnswersCount = 0;
+
+                    for (int i = 0; i < questions.Length; i++)
                     {
-                        correctAnswersCount++;
+                        if (IsCorrectAnswer(questions, answers, i))
+                        {
+                            correctAnswersCount++;
+                        }
                     }
-                }
 
-                Console.WriteLine();
-                Console.WriteLine($"Количество правильных ответов: {correctAnswersCount}");
-                string diagnosis = MakeDiagnosis(correctAnswersCount);
-                Console.WriteLine($"{name}, ваш диагноз: {diagnosis}");
+                    Console.WriteLine();
 
-                Console.WriteLine("Хотите пройти тест снова?");
-                string userAnswer = Console.ReadLine();
-                userAnswer = userAnswer.ToLower();
-                if (userAnswer == "нет")
-                {
-                    break;
+                    Console.WriteLine($"Количество правильных ответов: {correctAnswersCount}");
+                    double percentage = (double)correctAnswersCount * 100 / answers.Length;
+                    string diagnosis = MakeDiagnosis(percentage);
+                    Console.WriteLine($"{name}, ваш диагноз: {diagnosis}");
+
+                    Console.WriteLine("Хотите пройти тест снова?");
+                    string userAnswer = Console.ReadLine();
+                    userAnswer = userAnswer.ToLower();
+                    if (userAnswer == "нет")
+                    {
+                        break;
+                    }
+
+                    Console.WriteLine();
                 }
             }
 
@@ -106,16 +113,16 @@
                 answers[j] = tempForAnswers;
             }
         }
-        static string MakeDiagnosis(int correctAnswersCount)
+        static string MakeDiagnosis(double  percentage)
         {
-            switch (correctAnswersCount)
+            switch (percentage)
             {
                 case 0: return "Идиот";
-                case 1: return "Кретин";
-                case 2: return "Дурак";
-                case 3: return "Нормальный";
-                case 4: return "Талант";
-                case 5: return "Гений";
+                case <= 20: return "Кретин";
+                case <= 40: return "Дурак";
+                case <= 60: return "Нормальный";
+                case <= 80: return "Талант";
+                case <= 100: return "Гений";
                 default: return "Ошибка";
             }
         }
