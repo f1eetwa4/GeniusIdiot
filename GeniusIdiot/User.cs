@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace GeniusIdiot
+namespace GeniusIdiotConsoleApp
 {
     public class User
     {
@@ -13,6 +13,5 @@ namespace GeniusIdiot
         {
             FullName = fullName;
         }
-
     }
 }
