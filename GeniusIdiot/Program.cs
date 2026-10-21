@@ -4,12 +4,26 @@
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Введите имя пользователя");
-            string name = Console.ReadLine();
-            if (!string.IsNullOrEmpty(name))
+            UserStorage userStorage = new UserStorage();
+
+            while (true)
             {
-                while (true)
+                if (userStorage.Users.Count != 0)
                 {
+                    Console.WriteLine("Хотите вывести все результаты тестирования?");
+                    if (IsYes(Console.ReadLine()))
+                    {
+                        userStorage.Print();
+                    }
+                }
+                
+                Console.WriteLine("Пожалуйса, введите ваше ФИО");
+                string fullname = Console.ReadLine();
+
+                if (!string.IsNullOrEmpty(fullname))
+                {
+                    User user = new User(fullname);
+
                     string[] questions = CreateQuestions();
                     int[] answers = CreateAnswers();
                     Shuffle(questions, answers);
@@ -27,14 +41,18 @@
                     Console.WriteLine();
 
                     Console.WriteLine($"Количество правильных ответов: {correctAnswersCount}");
+                    user.CorrectAnswersCount = correctAnswersCount;
+
                     double percentage = (double)correctAnswersCount * 100 / answers.Length;
+
                     string diagnosis = MakeDiagnosis(percentage);
-                    Console.WriteLine($"{name}, ваш диагноз: {diagnosis}");
+                    user.Diagnosis = diagnosis;
+                    Console.WriteLine($"{fullname}, ваш диагноз: {diagnosis}");
+
+                    userStorage.Users.Add(user);
 
                     Console.WriteLine("Хотите пройти тест снова?");
-                    string userAnswer = Console.ReadLine();
-                    userAnswer = userAnswer.ToLower();
-                    if (userAnswer == "нет")
+                    if (!IsYes(Console.ReadLine()))
                     {
                         break;
                     }
@@ -42,6 +60,7 @@
                     Console.WriteLine();
                 }
             }
+
 
 
         }
@@ -58,7 +77,7 @@
                 Console.WriteLine("Пожалуйста, введите число!");
                 userAnswer = Console.ReadLine();
             }
-            
+
             if (int.Parse(userAnswer) == answers[i])
             {
                 return true;
@@ -113,7 +132,7 @@
                 answers[j] = tempForAnswers;
             }
         }
-        static string MakeDiagnosis(double  percentage)
+        static string MakeDiagnosis(double percentage)
         {
             switch (percentage)
             {
@@ -125,6 +144,15 @@
                 case <= 100: return "Гений";
                 default: return "Ошибка";
             }
+        }
+        static bool IsYes(string input)
+        {
+
+            if (!string.IsNullOrEmpty(input) && input.ToLower() == "да")
+            {
+                return true;
+            }
+            return false;
         }
     }
 }
