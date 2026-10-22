@@ -14,12 +14,14 @@ namespace GeniusIdiotConsoleApp
                 sw.WriteLine(text);
             }
         }
-        public static void Read(string path)
+        public static string Read(string path)
         {
+            string s;
             using (StreamReader sr = new StreamReader(path))
             {
-                Console.WriteLine(sr.ReadToEnd());
+                s = sr.ReadToEnd();
             }
+            return s;
         }
     }
 }
