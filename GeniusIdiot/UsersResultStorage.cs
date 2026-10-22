@@ -7,5 +7,6 @@ namespace GeniusIdiotConsoleApp
     public class UsersResultStorage
     {
         public List<User> Users = new List<User>();
+
     }
 }

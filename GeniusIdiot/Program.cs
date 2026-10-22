@@ -8,21 +8,42 @@ namespace GeniusIdiotConsoleApp
         {
             UsersResultStorage userStorage = new UsersResultStorage();
 
-            QuestionsStorage questionsStorage = CreateQuestionsAndAnswers();
 
-            string path = @"results.txt";
+            string pathResults = @"results.txt";
+            string pathQuestions = @"questions.txt";
             
+            QuestionsStorage questionsStorage = new QuestionsStorage(pathQuestions);
+            
+
             while (true)
             {
-                FileInfo fileInfo = new FileInfo(path);
-
-                if (fileInfo.Exists && File.ReadAllText(path).Length > 0)
+                if (File.Exists(pathResults))
                 {
                     Console.WriteLine("Хотите вывести все результаты тестирования?");
                     if (GetUserChoice())
                     {
-                        PrintResults(path);
+                        Console.WriteLine(FileSystem.Read(pathResults));
                     }
+                }
+
+                Console.WriteLine("Хотите добавить вопрос в тест?");
+                if (GetUserChoice())
+                {
+                    Console.WriteLine("Введите текст вопроса");
+                    string textQuestion = Console.ReadLine();
+                    while (string.IsNullOrEmpty(textQuestion))
+                    {
+                        Console.WriteLine("Текст вопроса не может быть пустой строкой");
+                        textQuestion = Console.ReadLine();
+                    }
+                    Console.WriteLine("Введите ответ на вопрос(число)");
+                    string answer = Console.ReadLine();
+                    while (!IsNumber(answer))
+                    {
+                        Console.WriteLine("Пожалуйста, введите число!");
+                        answer = Console.ReadLine();
+                    }
+                    questionsStorage.AddQuestion(pathQuestions, textQuestion, int.Parse(answer));
                 }
 
                 Console.WriteLine("Пожалуйса, введите ваше ФИО");
@@ -73,9 +94,11 @@ namespace GeniusIdiotConsoleApp
                     Console.WriteLine($"{fullname}, ваш диагноз: {diagnosis}");
 
                     userStorage.Users.Add(user);
-                    WriteResultsToFile(path, user);
+                    string text = string.Format("{0, -30} {1, -35} {2, -30}", user.FullName, user.CorrectAnswersCount, user.Diagnosis);
+                    FileSystem.Write(pathResults, text, true);
 
-                    Console.Write("Хотите пройти тест снова?");
+
+                    Console.Write("Хотите пройти тест снова? ");
                     if (!GetUserChoice())
                     {
                         break;
@@ -89,7 +112,7 @@ namespace GeniusIdiotConsoleApp
 
         }
 
-        
+
         public static bool IsNumber(string input)
         {
 
@@ -112,29 +135,7 @@ namespace GeniusIdiotConsoleApp
 
         }
 
-        static QuestionsStorage CreateQuestionsAndAnswers()
-        {
-            QuestionsStorage questionsStorage = new QuestionsStorage();
-
-            string[] questions =
-            {
-            "Сколько будет 2 плюс 2, умноженное на 2?",
-            "Бревно нужно распилить на 10 частей. Сколько надо сделать распилов?",
-            "На двух руках 10 пальцев. Сколько пальцев на 5 руках?",
-            "Укол делают каждые полчаса. Сколько нужно минут для трех уколов?",
-            "5 свечей горело, 2 потухли. Сколько свечей осталось?"
-            };
-            int[] answers = { 6, 9, 25, 60, 5 };
-
-            for (int i = 0; i < questions.Length; i++)
-            {
-                Question question1 = new Question(questions[i], answers[i]);
-                questionsStorage.Questions.Add(question1);
-            }
-
-            return questionsStorage;
-        }
-
+        
         static string MakeDiagnosis(double percentage)
         {
             switch (percentage)
@@ -168,24 +169,7 @@ namespace GeniusIdiotConsoleApp
                 }
             }
         }
-        static void WriteResultsToFile(string writePath, User user)
-        {
 
-            string text = string.Format("{0, -30} {1, -35} {2, -30}", user.FullName, user.CorrectAnswersCount, user.Diagnosis);
-            using (StreamWriter sw = new StreamWriter(writePath, true, System.Text.Encoding.Default))
-            {
-                sw.WriteLine(text);
-            }
 
-        }
-        static void PrintResults(string path)
-        {
-            Console.WriteLine("{0, -30} {1, -35} {2, -30}", "ФИО:", "Количество правильных ответов:", "Диагноз:");
-            using (StreamReader sr = new StreamReader(path))
-            {
-                Console.WriteLine(sr.ReadToEnd());
-            }
-
-        }
     }
 }
