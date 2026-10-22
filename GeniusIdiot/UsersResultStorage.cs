@@ -4,7 +4,7 @@ using System.Text;
 
 namespace GeniusIdiotConsoleApp
 {
-    public class UserStorage
+    public class UsersResultStorage
     {
         public List<User> Users = new List<User>();
     }
