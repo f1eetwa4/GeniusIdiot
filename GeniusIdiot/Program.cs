@@ -8,14 +8,15 @@ namespace GeniusIdiotConsoleApp
         {
             UserStorage userStorage = new UserStorage();
 
-            string path = @"C:\Users\darka\source\repos\GeniusIdiot\GeniusIdiot\results.txt";
+            string path = @"results.txt";
+            FileInfo fileInfo = new FileInfo(path);
 
             while (true)
             {
-                if (userStorage.Users.Count != 0)
+                if (fileInfo.Exists)
                 {
                     Console.WriteLine("Хотите вывести все результаты тестирования?");
-                    if (IsYes(Console.ReadLine()))
+                    if (GetUserChoice())
                     {
                         PrintResults(path);
                     }
@@ -53,8 +54,8 @@ namespace GeniusIdiotConsoleApp
                     userStorage.Users.Add(user);
                     WriteResultsToFile(path, user);
 
-                    Console.WriteLine("Хотите пройти тест снова?");
-                    if (!IsYes(Console.ReadLine()))
+                    Console.Write("Хотите пройти тест снова?");
+                    if (!GetUserChoice())
                     {
                         break;
                     }
@@ -89,14 +90,24 @@ namespace GeniusIdiotConsoleApp
         }
         static bool IsNumber(string input)
         {
-            foreach (char c in input)
+
+            if (string.IsNullOrEmpty(input))
             {
-                if (c < '0' || c > '9')
-                {
-                    return false;
-                }
+                return false;
             }
-            return true;
+            else
+            {
+                foreach (char c in input)
+                {
+                    if (c < '0' || c > '9')
+                    {
+                        return false;
+                    }
+                }
+                return true;
+            }
+
+
         }
 
         static string[] CreateQuestions()
@@ -146,14 +157,25 @@ namespace GeniusIdiotConsoleApp
                 default: return "Ошибка";
             }
         }
-        static bool IsYes(string input)
+        static bool GetUserChoice()
         {
-
-            if (!string.IsNullOrEmpty(input) && input.ToLower() == "да")
+            while (true)
             {
-                return true;
+                Console.WriteLine("Введите Да или Нет");
+                string input = Console.ReadLine().ToLower();
+                if (!string.IsNullOrEmpty(input))
+                {
+                    if (input == "да")
+                    {
+                        return true;
+
+                    }
+                    else if (input == "нет")
+                    {
+                        return false;
+                    }
+                }
             }
-            return false;
         }
         static void WriteResultsToFile(string writePath, User user)
         {
