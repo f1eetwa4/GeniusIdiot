@@ -6,14 +6,17 @@ namespace GeniusIdiotConsoleApp
     {
         static void Main(string[] args)
         {
-            UserStorage userStorage = new UserStorage();
+            UsersResultStorage userStorage = new UsersResultStorage();
+
+            QuestionsStorage questionsStorage = CreateQuestionsAndAnswers();
 
             string path = @"results.txt";
-            FileInfo fileInfo = new FileInfo(path);
-
+            
             while (true)
             {
-                if (fileInfo.Exists)
+                FileInfo fileInfo = new FileInfo(path);
+
+                if (fileInfo.Exists && File.ReadAllText(path).Length > 0)
                 {
                     Console.WriteLine("Хотите вывести все результаты тестирования?");
                     if (GetUserChoice())
@@ -24,20 +27,38 @@ namespace GeniusIdiotConsoleApp
 
                 Console.WriteLine("Пожалуйса, введите ваше ФИО");
                 string fullname = Console.ReadLine();
+                while (string.IsNullOrEmpty(fullname))
+                {
+                    Console.WriteLine("ФИО не может быть пустым! Введите ФИО еще раз");
+                    fullname = Console.ReadLine();
+                }
 
                 if (!string.IsNullOrEmpty(fullname))
                 {
                     User user = new User(fullname);
 
-                    string[] questions = CreateQuestions();
-                    int[] answers = CreateAnswers();
-                    Shuffle(questions, answers);
+                    questionsStorage.Shuffle();
 
-                    for (int i = 0; i < questions.Length; i++)
+                    List<Question> questions = questionsStorage.Questions;
+
+                    for (int i = 0; i < questions.Count; i++)
                     {
-                        if (IsCorrectAnswer(questions, answers, i))
+                        Question question = questions[i];
+
+                        Console.WriteLine(question.QuestionText);
+                        Console.Write("Ваш ответ: ");
+
+                        string userAnswer = Console.ReadLine();
+
+                        while (!IsNumber(userAnswer))
                         {
-                            user.CorrectAnswersCount++;
+                            Console.WriteLine("Пожалуйста, введите число!");
+                            userAnswer = Console.ReadLine();
+                        }
+
+                        if (question.IsCorrectAnswer(userAnswer))
+                        {
+                            user.IncreaseCorrectAnswersCount();
                         }
                     }
 
@@ -45,7 +66,7 @@ namespace GeniusIdiotConsoleApp
 
                     Console.WriteLine($"Количество правильных ответов: {user.CorrectAnswersCount}");
 
-                    double percentage = (double)user.CorrectAnswersCount * 100 / answers.Length;
+                    double percentage = (double)user.CorrectAnswersCount * 100 / questions.Count;
 
                     string diagnosis = MakeDiagnosis(percentage);
                     user.Diagnosis = diagnosis;
@@ -68,27 +89,8 @@ namespace GeniusIdiotConsoleApp
 
         }
 
-        static bool IsCorrectAnswer(string[] questions, int[] answers, int i)
-        {
-            Console.WriteLine(questions[i]);
-
-            Console.Write("Ваш ответ: ");
-            string userAnswer = Console.ReadLine();
-
-            while (!IsNumber(userAnswer))
-            {
-                Console.WriteLine("Пожалуйста, введите число!");
-                userAnswer = Console.ReadLine();
-            }
-
-            if (int.Parse(userAnswer) == answers[i])
-            {
-                return true;
-            }
-
-            return false;
-        }
-        static bool IsNumber(string input)
+        
+        public static bool IsNumber(string input)
         {
 
             if (string.IsNullOrEmpty(input))
@@ -110,40 +112,29 @@ namespace GeniusIdiotConsoleApp
 
         }
 
-        static string[] CreateQuestions()
+        static QuestionsStorage CreateQuestionsAndAnswers()
         {
+            QuestionsStorage questionsStorage = new QuestionsStorage();
+
             string[] questions =
             {
-    "Сколько будет 2 плюс 2, умноженное на 2?",
-    "Бревно нужно распилить на 10 частей. Сколько надо сделать распилов?",
-    "На двух руках 10 пальцев. Сколько пальцев на 5 руках?",
-    "Укол делают каждые полчаса. Сколько нужно минут для трех уколов?",
-    "5 свечей горело, 2 потухли. Сколько свечей осталось?"
-    };
-            return questions;
-        }
-        static int[] CreateAnswers()
-        {
+            "Сколько будет 2 плюс 2, умноженное на 2?",
+            "Бревно нужно распилить на 10 частей. Сколько надо сделать распилов?",
+            "На двух руках 10 пальцев. Сколько пальцев на 5 руках?",
+            "Укол делают каждые полчаса. Сколько нужно минут для трех уколов?",
+            "5 свечей горело, 2 потухли. Сколько свечей осталось?"
+            };
             int[] answers = { 6, 9, 25, 60, 5 };
-            return answers;
-        }
-        static void Shuffle(string[] questions, int[] answers)
-        {
-            Random random = new Random();
 
-            for (int i = questions.Length - 1; i > 0; i--)
+            for (int i = 0; i < questions.Length; i++)
             {
-                int j = random.Next(i + 1);
-
-                string tempForQuestions = questions[i];
-                questions[i] = questions[j];
-                questions[j] = tempForQuestions;
-
-                int tempForAnswers = answers[i];
-                answers[i] = answers[j];
-                answers[j] = tempForAnswers;
+                Question question1 = new Question(questions[i], answers[i]);
+                questionsStorage.Questions.Add(question1);
             }
+
+            return questionsStorage;
         }
+
         static string MakeDiagnosis(double percentage)
         {
             switch (percentage)
