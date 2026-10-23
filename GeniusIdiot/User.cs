@@ -7,15 +7,13 @@ namespace GeniusIdiotConsoleApp
     public class User
     {
         public string FullName { get; set; } = "ФИО неизвестно";
-        public int CorrectAnswersCount { get; private set;}
+        public double Percentage { get; set; }
         public string Diagnosis { get; set; } = "Диагноз неизвестен";
-        public User(string fullName)
+        public User(string fullName, double percentage, string diagnosis)
         {
             FullName = fullName;
-        }
-        public void IncreaseCorrectAnswersCount()
-        {
-            CorrectAnswersCount++;
+            Percentage = percentage;
+            Diagnosis = diagnosis;
         }
     }
 }
