@@ -13,40 +13,37 @@ namespace GeniusIdiotConsoleApp
 
             QuestionsStorage questionsStorage = new QuestionsStorage(pathQuestions);
 
+
             while (true)
             {
+                questionsStorage.Shuffle();
+
                 if (File.Exists(pathResults))
                 {
                     Console.WriteLine("Хотите вывести все результаты тестирования?");
                     if (GetUserChoice())
                     {
-                        Console.WriteLine("{0, -30} {1, -35} {2, -30}", "ФИО", "Процент правильных ответов", "Диагноз");
+                        Console.WriteLine("\n{0, -30} {1, -35} {2, -30}", "ФИО", "Процент правильных ответов", "Диагноз");
                         Console.WriteLine(FileSystem.Read(pathResults));
                     }
                 }
 
-                Console.WriteLine("Хотите добавить вопрос в тест?");
+                Console.WriteLine($"Хотите добавить вопрос в тест?");
                 if (GetUserChoice())
                 {
-                    Console.WriteLine("Введите текст вопроса");
-                    string textQuestion = GetCorrectInput();
-
-                    Console.WriteLine("Введите ответ на вопрос(число)");
-                    string answer = Console.ReadLine();
-                    while (!IsNumber(answer))
-                    {
-                        Console.WriteLine("Пожалуйста, введите число!");
-                        answer = Console.ReadLine();
-                    }
-
-                    questionsStorage.AddQuestion(pathQuestions, textQuestion, int.Parse(answer));
+                    questionsStorage.AddQuestion(pathQuestions);
                 }
 
-                Console.WriteLine("Пожалуйста, введите ваше ФИО");
-                string fullname = GetCorrectInput();
-                int correctAnswersCount = 0;
+                Console.WriteLine("\nХотите удалить какой-либо вопрос из теста?");
+                if (GetUserChoice())
+                {
+                    questionsStorage.RemoveQuestion(pathQuestions);
+                }
 
-                questionsStorage.Shuffle();
+                Console.WriteLine("\nПожалуйста, введите ваше ФИО");
+                string fullname = GetCorrectInput();
+
+                int correctAnswersCount = 0;
 
                 List<Question> questions = questionsStorage.Questions;
 
@@ -54,7 +51,7 @@ namespace GeniusIdiotConsoleApp
                 {
                     Question question = questions[i];
 
-                    Console.WriteLine(question.QuestionText);
+                    Console.WriteLine($"\n{question.QuestionText}");
                     Console.Write("Ваш ответ: ");
 
                     string userAnswer = Console.ReadLine();
@@ -71,10 +68,9 @@ namespace GeniusIdiotConsoleApp
                     }
                 }
 
-                Console.WriteLine();
 
                 double percentage = (double)correctAnswersCount * 100 / questions.Count;
-                Console.WriteLine($"Процент правильных ответов: {percentage}");
+                Console.WriteLine($"\nПроцент правильных ответов: {percentage}%");
 
                 string diagnosis = MakeDiagnosis(percentage);
                 Console.WriteLine($"{fullname}, ваш диагноз: {diagnosis}");
@@ -85,13 +81,13 @@ namespace GeniusIdiotConsoleApp
                 string text = string.Format("{0, -30} {1, -35} {2, -30}", user.FullName, user.Percentage, user.Diagnosis);
                 FileSystem.Write(pathResults, text, true);
 
-                Console.Write("Хотите пройти тест снова? ");
+                Console.Write("\nХотите пройти тест снова? ");
                 if (!GetUserChoice())
                 {
                     break;
                 }
 
-                Console.WriteLine();
+                Console.Clear();
 
             }
 
@@ -99,7 +95,7 @@ namespace GeniusIdiotConsoleApp
 
         }
 
-        static string GetCorrectInput()
+        public static string GetCorrectInput()
         {
             string input = Console.ReadLine();
             while (string.IsNullOrEmpty(input))

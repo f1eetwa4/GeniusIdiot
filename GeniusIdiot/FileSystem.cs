@@ -23,5 +23,13 @@ namespace GeniusIdiotConsoleApp
             }
             return s;
         }
+        public static void Remove(string path, string strToRemove)
+        {
+            string s = Read(path);
+            List<string> ss = s.Split(new[] { "\r\n", "\n" },StringSplitOptions.RemoveEmptyEntries).ToList();
+            ss.Remove(strToRemove);
+            string data = string.Join("\r\n", ss);
+            Write(path, data, false);
+        }
     }
 }

@@ -33,7 +33,7 @@ namespace GeniusIdiotConsoleApp
             {
 
                 string s = FileSystem.Read(pathQuestions);
-                string[] ss = s.Split('\n', StringSplitOptions.RemoveEmptyEntries);
+                string[] ss = s.Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries);
                 foreach (string line in ss)
                 {
                     string[] textAndAnswer = line.Split('|', StringSplitOptions.RemoveEmptyEntries);
@@ -41,12 +41,11 @@ namespace GeniusIdiotConsoleApp
                     string answer = textAndAnswer[1].Trim();
                     Question question = new Question(textQuestion, int.Parse(answer));
                     Questions.Add(question);
-                    
+
                 }
             }
 
         }
-        
         public void Shuffle()
         {
             Random random = new Random();
@@ -60,12 +59,65 @@ namespace GeniusIdiotConsoleApp
                 Questions[index] = questionTemp;
             }
         }
-        public void AddQuestion(string pathQuestions, string textQuestion, int answer)
+
+        public void AddQuestion(string pathQuestions)
         {
+            PrintQuestions();
+
+            Console.WriteLine("Введите текст вопроса");
+            string textQuestion = Program.GetCorrectInput();
+            Console.WriteLine("Введите ответ на вопрос(число)");
+            string answer = Console.ReadLine();
+            while (!Program.IsNumber(answer))
+            {
+                Console.WriteLine("Пожалуйста, введите число!");
+                answer = Console.ReadLine();
+            }
+
             FileSystem.Write(pathQuestions, $"{textQuestion}|{answer}", true);
 
-            Question newQuestion = new Question(textQuestion, answer);
+            Question newQuestion = new Question(textQuestion, int.Parse(answer));
             Questions.Add(newQuestion);
+        }
+        public void RemoveQuestion(string pathQuestions)
+        {
+            string input;
+            while (true)
+            {
+                Console.WriteLine("\nВведите номер вопроса, который хотите удалить");
+                PrintQuestions();
+                input = Program.GetCorrectInput();
+                if (Program.IsNumber(input))
+                {
+                    int index1 = int.Parse(input) - 1;
+                    if (index1 < 0 || index1 > Questions.Count - 1)
+                    {
+                        Console.WriteLine("Не существует вопроса с таким номером.");
+                        continue;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+                else
+                {
+                    continue;
+                }
+            }
+            int index = int.Parse(input) - 1;
+            string questionAndAnswer = $"{Questions[index].QuestionText}|{Questions[index].Answer}";
+            FileSystem.Remove(pathQuestions, questionAndAnswer);
+            Questions.Remove(Questions[index]);
+
+        }
+        public void PrintQuestions()
+        {
+            Console.WriteLine("Список вопросов:");
+            for (int i = 0; i < Questions.Count; i++)
+            {
+                Console.WriteLine($"{i + 1}) {Questions[i].QuestionText}");
+            }
         }
 
     }
