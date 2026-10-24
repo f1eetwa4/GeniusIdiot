@@ -13,10 +13,10 @@ namespace GeniusIdiotConsoleApp
             QuestionText = questionText;
             Answer = answer;
         }
-        public bool IsCorrectAnswer(string input)
+        public bool IsCorrectAnswer(int input)
         {
             
-            if (int.Parse(input) == Answer)
+            if (input == Answer)
             {
                 return true;
             }

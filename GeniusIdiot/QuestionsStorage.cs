@@ -67,45 +67,33 @@ namespace GeniusIdiotConsoleApp
             Console.WriteLine("Введите текст вопроса");
             string textQuestion = Program.GetCorrectInput();
             Console.WriteLine("Введите ответ на вопрос(число)");
-            string answer = Console.ReadLine();
-            while (!Program.IsNumber(answer))
-            {
-                Console.WriteLine("Пожалуйста, введите число!");
-                answer = Console.ReadLine();
-            }
+            int answer = Program.GetUserAnswer();
+
 
             FileSystem.Write(pathQuestions, $"{textQuestion}|{answer}", true);
 
-            Question newQuestion = new Question(textQuestion, int.Parse(answer));
+            Question newQuestion = new Question(textQuestion, answer);
             Questions.Add(newQuestion);
         }
         public void RemoveQuestion(string pathQuestions)
         {
-            string input;
+            int input;
             while (true)
             {
                 Console.WriteLine("\nВведите номер вопроса, который хотите удалить");
                 PrintQuestions();
-                input = Program.GetCorrectInput();
-                if (Program.IsNumber(input))
+                input = Program.GetUserAnswer();
+                int index1 = input - 1;
+                if (index1 < 0 || index1 > Questions.Count - 1)
                 {
-                    int index1 = int.Parse(input) - 1;
-                    if (index1 < 0 || index1 > Questions.Count - 1)
-                    {
-                        Console.WriteLine("Не существует вопроса с таким номером.");
-                        continue;
-                    }
-                    else
-                    {
-                        break;
-                    }
+                    Console.WriteLine("Не существует вопроса с таким номером.");
                 }
                 else
                 {
-                    continue;
+                    break;
                 }
             }
-            int index = int.Parse(input) - 1;
+            int index = input - 1;
             string questionAndAnswer = $"{Questions[index].QuestionText}|{Questions[index].Answer}";
             FileSystem.Remove(pathQuestions, questionAndAnswer);
             Questions.Remove(Questions[index]);

@@ -6,11 +6,11 @@ namespace GeniusIdiotConsoleApp
     {
         static void Main(string[] args)
         {
-            UsersResultStorage userStorage = new UsersResultStorage();
 
             string pathResults = @"results.txt";
-            string pathQuestions = @"questions.txt";
+            UsersResultStorage userStorage = new UsersResultStorage(pathResults);
 
+            string pathQuestions = @"questions.txt";
             QuestionsStorage questionsStorage = new QuestionsStorage(pathQuestions);
 
 
@@ -18,13 +18,12 @@ namespace GeniusIdiotConsoleApp
             {
                 questionsStorage.Shuffle();
 
-                if (File.Exists(pathResults))
+                if (userStorage.Users.Count != 0)
                 {
                     Console.WriteLine("Хотите вывести все результаты тестирования?");
                     if (GetUserChoice())
                     {
-                        Console.WriteLine("\n{0, -30} {1, -35} {2, -30}", "ФИО", "Процент правильных ответов", "Диагноз");
-                        Console.WriteLine(FileSystem.Read(pathResults));
+                        userStorage.PrintResults();
                     }
                 }
 
@@ -54,13 +53,7 @@ namespace GeniusIdiotConsoleApp
                     Console.WriteLine($"\n{question.QuestionText}");
                     Console.Write("Ваш ответ: ");
 
-                    string userAnswer = Console.ReadLine();
-
-                    while (!IsNumber(userAnswer))
-                    {
-                        Console.WriteLine("Пожалуйста, введите число!");
-                        userAnswer = Console.ReadLine();
-                    }
+                    int userAnswer = GetUserAnswer();
 
                     if (question.IsCorrectAnswer(userAnswer))
                     {
@@ -69,7 +62,7 @@ namespace GeniusIdiotConsoleApp
                 }
 
 
-                double percentage = (double)correctAnswersCount * 100 / questions.Count;
+                double percentage = Math.Round((double)correctAnswersCount * 100 / questions.Count);
                 Console.WriteLine($"\nПроцент правильных ответов: {percentage}%");
 
                 string diagnosis = MakeDiagnosis(percentage);
@@ -78,8 +71,8 @@ namespace GeniusIdiotConsoleApp
                 User user = new User(fullname, percentage, diagnosis);
                 userStorage.Users.Add(user);
 
-                string text = string.Format("{0, -30} {1, -35} {2, -30}", user.FullName, user.Percentage, user.Diagnosis);
-                FileSystem.Write(pathResults, text, true);
+                string text = $"{user.FullName}|{user.Percentage}|{user.Diagnosis}";
+                UsersResultStorage.SaveResult(pathResults, text);
 
                 Console.Write("\nХотите пройти тест снова? ");
                 if (!GetUserChoice())
@@ -106,22 +99,22 @@ namespace GeniusIdiotConsoleApp
             return input;
         }
 
-        public static bool IsNumber(string input)
+        public static int GetUserAnswer()
         {
-            if (string.IsNullOrEmpty(input))
+            while (true)
             {
-                return false;
-            }
-            else
-            {
-                foreach (char c in input)
+                try
                 {
-                    if (c < '0' || c > '9')
-                    {
-                        return false;
-                    }
+                    return Convert.ToInt32(Console.ReadLine());
                 }
-                return true;
+                catch (FormatException)
+                {
+                    Console.WriteLine("Пожалуйста, введите число!");
+                }
+                catch (OverflowException)
+                {
+                    Console.WriteLine("Число слишком большое! Пожалуйста, введите число повторно!");
+                }
             }
         }
 
