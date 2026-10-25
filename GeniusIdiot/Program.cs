@@ -1,8 +1,9 @@
-﻿using System.IO;
+﻿using ClassLibrary;
+using System.IO;
 
 namespace GeniusIdiotConsoleApp
 {
-    internal class Program
+    class Program 
     {
         static void Main(string[] args)
         {
@@ -16,66 +17,106 @@ namespace GeniusIdiotConsoleApp
 
             while (true)
             {
-                questionsStorage.Shuffle();
+                User user = new User();
 
                 if (userStorage.Users.Count != 0)
                 {
                     Console.WriteLine("Хотите вывести все результаты тестирования?");
-                    if (GetUserChoice())
+                    if (InputChecker.GetUserChoice())
                     {
-                        userStorage.PrintResults();
+                        string results = userStorage.GetResults();
+                        Console.WriteLine(results);
                     }
                 }
 
                 Console.WriteLine($"Хотите добавить вопрос в тест?");
-                if (GetUserChoice())
+                if (InputChecker.GetUserChoice())
                 {
-                    questionsStorage.AddQuestion(pathQuestions);
+                    var allQuestions = questionsStorage.Questions;
+                    for (int i = 0; i < allQuestions.Count; i++)
+                    {
+                        Console.WriteLine($"{i + 1}) {allQuestions[i].QuestionText}");
+                    }
+
+                    Console.WriteLine("Введите текст вопроса");
+                    string textQuestion = InputChecker.GetCorrectInputFromConsole();
+                    Console.WriteLine("Введите ответ на вопрос(число)");
+                    int answer = InputChecker.GetUserAnswer();
+
+                    questionsStorage.AddQuestion(pathQuestions, textQuestion, answer);
+
                 }
 
                 Console.WriteLine("\nХотите удалить какой-либо вопрос из теста?");
-                if (GetUserChoice())
+                if (InputChecker.GetUserChoice())
                 {
-                    questionsStorage.RemoveQuestion(pathQuestions);
+                    int input;
+                    while (true)
+                    {
+                        Console.WriteLine("\nВведите номер вопроса, который хотите удалить");
+                        var allQuestions = questionsStorage.Questions;
+                        for (int i = 0; i < allQuestions.Count; i++)
+                        {
+                            Console.WriteLine($"{i + 1}) {allQuestions[i].QuestionText}");
+                        }
+                        input = InputChecker.GetUserAnswer();
+                        int index1 = input - 1;
+                        if (index1 < 0 || index1 > allQuestions.Count - 1)
+                        {
+                            Console.WriteLine("Не существует вопроса с таким номером.");
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                    questionsStorage.RemoveQuestion(pathQuestions, input);
                 }
 
                 Console.WriteLine("\nПожалуйста, введите ваше ФИО");
-                string fullname = GetCorrectInput();
+                string fullname = InputChecker.GetCorrectInputFromConsole();
 
-                int correctAnswersCount = 0;
+                var questions = QuestionsStorage.GetQuestions(questionsStorage);
 
-                List<Question> questions = questionsStorage.Questions;
 
-                for (int i = 0; i < questions.Count; i++)
+                var random = new Random();
+
+                for (int i = questions.Count - 1; i >= 0; i--)
                 {
-                    Question question = questions[i];
+                    var index = random.Next(0, questions.Count);
+
+                    Question question = questions[index];
 
                     Console.WriteLine($"\n{question.QuestionText}");
                     Console.Write("Ваш ответ: ");
 
-                    int userAnswer = GetUserAnswer();
+                    int userAnswer = InputChecker.GetUserAnswer();
 
                     if (question.IsCorrectAnswer(userAnswer))
                     {
-                        correctAnswersCount++;
+                        user.IncreaseCorrectAnswersCount();
                     }
+
+                    questions.RemoveAt(index);
                 }
 
 
-                double percentage = Math.Round((double)correctAnswersCount * 100 / questions.Count);
+                double percentage = Math.Round((double)user.CorrectAnswersCount * 100 / questionsStorage.Questions.Count);
                 Console.WriteLine($"\nПроцент правильных ответов: {percentage}%");
 
-                string diagnosis = MakeDiagnosis(percentage);
+                string diagnosis = Diagnosis.MakeDiagnosis(percentage);
                 Console.WriteLine($"{fullname}, ваш диагноз: {diagnosis}");
 
-                User user = new User(fullname, percentage, diagnosis);
+                user.FullName = fullname;
+                user.Percentage = percentage;
+                user.Diagnosis = diagnosis;
                 userStorage.Users.Add(user);
 
                 string text = $"{user.FullName}|{user.Percentage}|{user.Diagnosis}";
                 UsersResultStorage.SaveResult(pathResults, text);
 
                 Console.Write("\nХотите пройти тест снова? ");
-                if (!GetUserChoice())
+                if (!InputChecker.GetUserChoice())
                 {
                     break;
                 }
@@ -87,72 +128,5 @@ namespace GeniusIdiotConsoleApp
 
 
         }
-
-        public static string GetCorrectInput()
-        {
-            string input = Console.ReadLine();
-            while (string.IsNullOrEmpty(input))
-            {
-                Console.WriteLine("Неверный ввод! Попробуйте еще раз");
-                input = Console.ReadLine();
-            }
-            return input;
-        }
-
-        public static int GetUserAnswer()
-        {
-            while (true)
-            {
-                try
-                {
-                    return Convert.ToInt32(Console.ReadLine());
-                }
-                catch (FormatException)
-                {
-                    Console.WriteLine("Пожалуйста, введите число!");
-                }
-                catch (OverflowException)
-                {
-                    Console.WriteLine("Число слишком большое! Пожалуйста, введите число повторно!");
-                }
-            }
-        }
-
-
-        static string MakeDiagnosis(double percentage)
-        {
-            switch (percentage)
-            {
-                case 0: return "Идиот";
-                case <= 20: return "Кретин";
-                case <= 40: return "Дурак";
-                case <= 60: return "Нормальный";
-                case <= 80: return "Талант";
-                case <= 100: return "Гений";
-                default: return "Ошибка";
-            }
-        }
-        static bool GetUserChoice()
-        {
-            while (true)
-            {
-                Console.WriteLine("Введите Да или Нет");
-                string input = Console.ReadLine().ToLower();
-                if (!string.IsNullOrEmpty(input))
-                {
-                    if (input == "да")
-                    {
-                        return true;
-
-                    }
-                    else if (input == "нет")
-                    {
-                        return false;
-                    }
-                }
-            }
-        }
-
-
     }
 }

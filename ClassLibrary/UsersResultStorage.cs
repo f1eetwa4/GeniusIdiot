@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 
-namespace GeniusIdiotConsoleApp
+namespace ClassLibrary
 {
     public class UsersResultStorage
     {
@@ -33,14 +33,15 @@ namespace GeniusIdiotConsoleApp
                 }
             }
         }
-        public void PrintResults()
+        public string GetResults()
         {
-            Console.WriteLine("\n{0, -30} {1, -35} {2, -30}", "ФИО", "Процент правильных ответов", "Диагноз");
+            string s;
+            s = string.Format("{0, -30} {1, -35} {2, -30}", "ФИО", "Процент правильных ответов", "Диагноз");
             foreach (var user in Users)
             {
-                Console.WriteLine("{0, -30} {1, -35} {2, -30}", user.FullName, user.Percentage, user.Diagnosis);
+                s += string.Format("\n{0, -30} {1, -35} {2, -30}", user.FullName, user.Percentage, user.Diagnosis);
             }
-            Console.WriteLine();
+            return s;
         }
 
     }
