@@ -32,8 +32,13 @@
             questionNumberLabel = new Label();
             questionTextLabel = new Label();
             userAnswerTextBox = new TextBox();
-            buttonResults = new Button();
             buttonQuestionList = new Button();
+            menuStrip1 = new MenuStrip();
+            менюToolStripMenuItem = new ToolStripMenuItem();
+            перезапуститьToolStripMenuItem = new ToolStripMenuItem();
+            выходToolStripMenuItem = new ToolStripMenuItem();
+            показатьРезультатыВикториыToolStripMenuItem = new ToolStripMenuItem();
+            menuStrip1.SuspendLayout();
             SuspendLayout();
             // 
             // nextButton
@@ -51,17 +56,18 @@
             // 
             questionNumberLabel.AutoSize = true;
             questionNumberLabel.Font = new Font("Tahoma", 12F, FontStyle.Regular, GraphicsUnit.Point, 204);
-            questionNumberLabel.Location = new Point(12, 34);
+            questionNumberLabel.Location = new Point(12, 63);
             questionNumberLabel.Name = "questionNumberLabel";
             questionNumberLabel.Size = new Size(93, 19);
             questionNumberLabel.TabIndex = 1;
             questionNumberLabel.Text = "Вопрос №1";
+            questionNumberLabel.Click += questionNumberLabel_Click;
             // 
             // questionTextLabel
             // 
             questionTextLabel.AutoSize = true;
             questionTextLabel.Font = new Font("Tahoma", 14.25F, FontStyle.Regular, GraphicsUnit.Point, 204);
-            questionTextLabel.Location = new Point(12, 73);
+            questionTextLabel.Location = new Point(12, 91);
             questionTextLabel.Name = "questionTextLabel";
             questionTextLabel.Size = new Size(135, 23);
             questionTextLabel.TabIndex = 2;
@@ -74,19 +80,9 @@
             userAnswerTextBox.Size = new Size(655, 23);
             userAnswerTextBox.TabIndex = 3;
             // 
-            // buttonResults
-            // 
-            buttonResults.Location = new Point(12, 186);
-            buttonResults.Name = "buttonResults";
-            buttonResults.Size = new Size(148, 52);
-            buttonResults.TabIndex = 4;
-            buttonResults.Text = "Показать результаты викторины";
-            buttonResults.UseVisualStyleBackColor = true;
-            buttonResults.Click += buttonResults_Click;
-            // 
             // buttonQuestionList
             // 
-            buttonQuestionList.Location = new Point(519, 186);
+            buttonQuestionList.Location = new Point(265, 168);
             buttonQuestionList.Name = "buttonQuestionList";
             buttonQuestionList.Size = new Size(148, 52);
             buttonQuestionList.TabIndex = 5;
@@ -94,20 +90,62 @@
             buttonQuestionList.UseVisualStyleBackColor = true;
             buttonQuestionList.Click += buttonQuestionList_Click;
             // 
+            // menuStrip1
+            // 
+            menuStrip1.Items.AddRange(new ToolStripItem[] { менюToolStripMenuItem });
+            menuStrip1.Location = new Point(0, 0);
+            menuStrip1.Name = "menuStrip1";
+            menuStrip1.Size = new Size(679, 33);
+            menuStrip1.TabIndex = 6;
+            menuStrip1.Text = "menuStrip1";
+            menuStrip1.ItemClicked += menuStrip1_ItemClicked;
+            // 
+            // менюToolStripMenuItem
+            // 
+            менюToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { перезапуститьToolStripMenuItem, выходToolStripMenuItem, показатьРезультатыВикториыToolStripMenuItem });
+            менюToolStripMenuItem.Font = new Font("Segoe UI", 13F);
+            менюToolStripMenuItem.Name = "менюToolStripMenuItem";
+            менюToolStripMenuItem.Size = new Size(74, 29);
+            менюToolStripMenuItem.Text = "Меню";
+            // 
+            // перезапуститьToolStripMenuItem
+            // 
+            перезапуститьToolStripMenuItem.Name = "перезапуститьToolStripMenuItem";
+            перезапуститьToolStripMenuItem.Size = new Size(351, 30);
+            перезапуститьToolStripMenuItem.Text = "Перезапустить";
+            перезапуститьToolStripMenuItem.Click += перезапуститьToolStripMenuItem_Click;
+            // 
+            // выходToolStripMenuItem
+            // 
+            выходToolStripMenuItem.Name = "выходToolStripMenuItem";
+            выходToolStripMenuItem.Size = new Size(351, 30);
+            выходToolStripMenuItem.Text = "Выход";
+            выходToolStripMenuItem.Click += выходToolStripMenuItem_Click;
+            // 
+            // показатьРезультатыВикториыToolStripMenuItem
+            // 
+            показатьРезультатыВикториыToolStripMenuItem.Name = "показатьРезультатыВикториыToolStripMenuItem";
+            показатьРезультатыВикториыToolStripMenuItem.Size = new Size(351, 30);
+            показатьРезультатыВикториыToolStripMenuItem.Text = "Показать результаты викторины";
+            показатьРезультатыВикториыToolStripMenuItem.Click += показатьРезультатыВикториыToolStripMenuItem_Click;
+            // 
             // mainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(679, 421);
             Controls.Add(buttonQuestionList);
-            Controls.Add(buttonResults);
             Controls.Add(userAnswerTextBox);
             Controls.Add(questionTextLabel);
             Controls.Add(questionNumberLabel);
             Controls.Add(nextButton);
+            Controls.Add(menuStrip1);
+            MainMenuStrip = menuStrip1;
             Name = "mainForm";
             Text = "Гений Идиот";
             Load += Form1_Load;
+            menuStrip1.ResumeLayout(false);
+            menuStrip1.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -118,7 +156,11 @@
         private Label questionNumberLabel;
         private Label questionTextLabel;
         private TextBox userAnswerTextBox;
-        private Button buttonResults;
         private Button buttonQuestionList;
+        private MenuStrip menuStrip1;
+        private ToolStripMenuItem менюToolStripMenuItem;
+        private ToolStripMenuItem перезапуститьToolStripMenuItem;
+        private ToolStripMenuItem выходToolStripMenuItem;
+        private ToolStripMenuItem показатьРезультатыВикториыToolStripMenuItem;
     }
 }
