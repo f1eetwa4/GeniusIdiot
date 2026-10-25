@@ -129,6 +129,32 @@ namespace GeniusIdiotWindowsFormsApp
 
             userAnswerTextBox.Clear();
         }
+
+        private void menuStrip1_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        {
+
+        }
+
+        private void показатьРезультатыВикториыToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ResultsForm resultsForm = new ResultsForm(userStorage.Users);
+            resultsForm.ShowDialog();
+        }
+
+        private void перезапуститьToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Application.Restart();
+        }
+
+        private void выходToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
+        }
+
+        private void questionNumberLabel_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
 
