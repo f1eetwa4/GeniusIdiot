@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using ClassLibrary;
+using GeniusIdiotConsoleApp;
 
-namespace GeniusIdiotConsoleApp
+namespace ClassLibrary
 {
     public class QuestionsStorage
     {
@@ -46,66 +48,31 @@ namespace GeniusIdiotConsoleApp
             }
 
         }
-        public void Shuffle()
+        
+        public void AddQuestion(string pathQuestions, string textQuestion, int answer)
         {
-            Random random = new Random();
-
-            for (int i = Questions.Count - 1; i >= 1; i--)
-            {
-                int index = random.Next(0, i);
-
-                Question questionTemp = Questions[i];
-                Questions[i] = Questions[index];
-                Questions[index] = questionTemp;
-            }
-        }
-
-        public void AddQuestion(string pathQuestions)
-        {
-            PrintQuestions();
-
-            Console.WriteLine("Введите текст вопроса");
-            string textQuestion = Program.GetCorrectInput();
-            Console.WriteLine("Введите ответ на вопрос(число)");
-            int answer = Program.GetUserAnswer();
-
-
             FileSystem.Write(pathQuestions, $"{textQuestion}|{answer}", true);
 
             Question newQuestion = new Question(textQuestion, answer);
             Questions.Add(newQuestion);
         }
-        public void RemoveQuestion(string pathQuestions)
+        public void RemoveQuestion(string pathQuestions, int input)
         {
-            int input;
-            while (true)
-            {
-                Console.WriteLine("\nВведите номер вопроса, который хотите удалить");
-                PrintQuestions();
-                input = Program.GetUserAnswer();
-                int index1 = input - 1;
-                if (index1 < 0 || index1 > Questions.Count - 1)
-                {
-                    Console.WriteLine("Не существует вопроса с таким номером.");
-                }
-                else
-                {
-                    break;
-                }
-            }
             int index = input - 1;
             string questionAndAnswer = $"{Questions[index].QuestionText}|{Questions[index].Answer}";
             FileSystem.Remove(pathQuestions, questionAndAnswer);
             Questions.Remove(Questions[index]);
 
         }
-        public void PrintQuestions()
+        
+        public static List<Question> GetQuestions(QuestionsStorage questionsStorage)
         {
-            Console.WriteLine("Список вопросов:");
-            for (int i = 0; i < Questions.Count; i++)
+            var questionsCopy = new List<Question>();
+            foreach (var question in questionsStorage.Questions)
             {
-                Console.WriteLine($"{i + 1}) {Questions[i].QuestionText}");
+                questionsCopy.Add(question);
             }
+            return questionsCopy;
         }
 
     }
