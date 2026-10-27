@@ -1,48 +1,54 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
-using System.Text;
 using System.IO;
+using System.Text;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace ClassLibrary
 {
     public class UsersResultStorage
     {
-        public List<User> Users = new List<User>();
-        public static void SaveResult(string pathResults, string text)
+        private List<User> UsersResults = new List<User>();
+        private string Path = "results.json";
+        public void AddResult(User user)
         {
-            FileSystem.Write(pathResults, text, true);
+            UsersResults.Add(user);
+            Save();
         }
-        public UsersResultStorage(string pathResults)
+        public void Save()
         {
-            if (!File.Exists(pathResults))
+            var jsonData = JsonConvert.SerializeObject(UsersResults, Formatting.Indented);
+            FileSystem.Write(Path, jsonData, false);
+        }
+        public UsersResultStorage()
+        {
+            if (File.Exists(Path))
             {
-                FileSystem.Write(pathResults, "", false);
-            }
-            else
-            {
-                string[] ss = FileSystem.Read(pathResults).Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
-                foreach (string s in ss)
-                {
-                    string[] userResult = s.Split('|');
-                    string userName = userResult[0];
-                    int userPercentage = int.Parse(userResult[1]);
-                    string userDiagnosis = userResult[2];
-
-                    User user = new User(userName, userPercentage, userDiagnosis);
-                    Users.Add(user);
-                }
+                var resultsInfo = FileSystem.Read(Path);
+                UsersResults = JsonConvert.DeserializeObject<List<User>>(resultsInfo) ?? new List<User>();
             }
         }
-        public string GetResults()
+        public List<User> GetResults()
         {
-            string s;
-            s = string.Format("{0, -30} {1, -35} {2, -30}", "ФИО", "Процент правильных ответов", "Диагноз");
-            foreach (var user in Users)
+            var resultsCopy = new List<User>();
+            foreach (var result in UsersResults)
             {
-                s += string.Format("\n{0, -30} {1, -35} {2, -30}", user.FullName, user.Percentage, user.Diagnosis);
+                resultsCopy.Add(result);
             }
-            return s;
+            return resultsCopy;
         }
+        
 
     }
 }
+
+//string s;
+//s = string.Format("{0, -30} {1, -35} {2, -30}", "ФИО", "Процент правильных ответов", "Диагноз");
+//foreach (var user in Users)
+//{
+//    s += string.Format("\n{0, -30} {1, -35} {2, -30}", user.FullName, user.Percentage, user.Diagnosis);
+//}
+//return s;
+
+// изменить для консоли!!

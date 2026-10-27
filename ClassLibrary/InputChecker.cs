@@ -9,7 +9,7 @@
         public static string GetCorrectInputFromConsole()
         {
             string input = Console.ReadLine();
-            while (string.IsNullOrEmpty(input))
+            while (string.IsNullOrWhiteSpace(input))
             {
                 Console.WriteLine("Неверный ввод! Попробуйте еще раз");
                 input = Console.ReadLine();

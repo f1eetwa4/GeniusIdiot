@@ -16,9 +16,9 @@ namespace GeniusIdiotWindowsFormsApp
             InitializeComponent();
         }
         private List<User> users { get; set; }
-        public ResultsForm(List<User> Users) : this()
+        public ResultsForm(List<User> users) : this()
         {
-            users = Users;
+            this.users = users;
         }
         private void ResultsForm_Load(object sender, EventArgs e)
         {
