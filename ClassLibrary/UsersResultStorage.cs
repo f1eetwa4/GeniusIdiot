@@ -43,12 +43,4 @@ namespace ClassLibrary
     }
 }
 
-//string s;
-//s = string.Format("{0, -30} {1, -35} {2, -30}", "ФИО", "Процент правильных ответов", "Диагноз");
-//foreach (var user in Users)
-//{
-//    s += string.Format("\n{0, -30} {1, -35} {2, -30}", user.FullName, user.Percentage, user.Diagnosis);
-//}
-//return s;
 
-// изменить для консоли!!
