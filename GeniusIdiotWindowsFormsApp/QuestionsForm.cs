@@ -74,23 +74,16 @@ namespace GeniusIdiotWindowsFormsApp
 
         private void buttonRemoveQuestion_Click(object sender, EventArgs e)
         {
-
-            if (!InputChecker.IsNumber(textBoxNumberQuestion.Text))
+            if (dataQuestions.CurrentRow == null)
             {
-                MessageBox.Show("Введите число!");
+                MessageBox.Show("Выберите строку");
                 return;
             }
-
-            int input = int.Parse(textBoxNumberQuestion.Text);
-            if (input - 1 >= questionsStorage.Questions.Count || input < 1)
-            {
-                MessageBox.Show("Вопроса с таким номером нет!");
-                return;
-            }
-            
-            questionsStorage.RemoveQuestion(input);
-            textBoxNumberQuestion.Clear();
+            int number = dataQuestions.CurrentRow.Index + 1;
+            questionsStorage.RemoveQuestion(number);
             UpdateInfoTable();
         }
+
+        
     }
 }
