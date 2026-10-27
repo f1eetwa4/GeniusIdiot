@@ -6,7 +6,7 @@ namespace ClassLibrary
 {
     public class Question
     {
-        public string QuestionText { get; set; } = "Вопрос не задан";
+        public string QuestionText { get; set; } = "";
         public int Answer { get; set; }
         public Question(string questionText, int answer)
         {

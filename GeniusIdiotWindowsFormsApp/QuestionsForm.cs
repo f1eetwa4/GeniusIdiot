@@ -53,9 +53,9 @@ namespace GeniusIdiotWindowsFormsApp
                 MessageBox.Show("Введите число(ответ на вопрос)!");
                 return;
             }
-
             int answerQuestion = int.Parse(textBoxAnswerQuestion.Text);
-            questionsStorage.AddQuestion("questions.txt", textQuestion, answerQuestion);
+            Question newQuestion = new Question(textQuestion, answerQuestion);
+            questionsStorage.AddQuestion(newQuestion);
             textBoxQuestion.Clear();
             textBoxAnswerQuestion.Clear();
             UpdateInfoTable();
@@ -88,7 +88,7 @@ namespace GeniusIdiotWindowsFormsApp
                 return;
             }
             
-            questionsStorage.RemoveQuestion("questions.txt", input);
+            questionsStorage.RemoveQuestion(input);
             textBoxNumberQuestion.Clear();
             UpdateInfoTable();
         }

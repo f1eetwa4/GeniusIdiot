@@ -102,6 +102,7 @@
             // 
             // менюToolStripMenuItem
             // 
+            менюToolStripMenuItem.BackColor = Color.Cyan;
             менюToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { перезапуститьToolStripMenuItem, выходToolStripMenuItem, показатьРезультатыВикториыToolStripMenuItem });
             менюToolStripMenuItem.Font = new Font("Segoe UI", 13F);
             менюToolStripMenuItem.Name = "менюToolStripMenuItem";

@@ -6,8 +6,7 @@ namespace GeniusIdiotWindowsFormsApp
     public partial class mainForm : Form
     {
         private List<Question> questions;
-        private List<Question> copiedQuestions;
-        private Question currentQuestion;
+        public Question? currentQuestion;
         private QuestionsStorage questionsStorage;
         private UsersResultStorage userStorage;
         private User user;
@@ -20,14 +19,10 @@ namespace GeniusIdiotWindowsFormsApp
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            string pathResults = @"results.txt";
-            userStorage = new UsersResultStorage(pathResults);
+            userStorage = new UsersResultStorage();
 
-            string pathQuestions = @"questions.txt";
-            questionsStorage = new QuestionsStorage(pathQuestions);
+            questionsStorage = new QuestionsStorage();
 
-            questions = QuestionsStorage.GetQuestions(questionsStorage);
-            copiedQuestions = QuestionsStorage.GetQuestions(questionsStorage);
 
             questionNumberLabel.Visible = false;
             questionTextLabel.Text = "Введите ваше ФИО";
@@ -51,15 +46,16 @@ namespace GeniusIdiotWindowsFormsApp
 
         private void nextButton_Click(object sender, EventArgs e)
         {
-            if (!InputChecker.IsCorrectInput(userAnswerTextBox.Text))
-            {
-                MessageBox.Show("ФИО не может быть пустым!");
-                userAnswerTextBox.Clear();
-                return;
-            }
-
+            
             if (isGameStarted)
             {
+                if (!InputChecker.IsNumber(userAnswerTextBox.Text))
+                {
+                    MessageBox.Show("Введите число!");
+                    userAnswerTextBox.Clear();
+                    return;
+                }
+
                 var userAnswer = Convert.ToInt32(userAnswerTextBox.Text);
                 if (currentQuestion.IsCorrectAnswer(userAnswer))
                 {
@@ -71,26 +67,35 @@ namespace GeniusIdiotWindowsFormsApp
                 if (endGame)
                 {
                     double percentage = Math.Round((double)user.CorrectAnswersCount * 100 / questionsStorage.Questions.Count);
+                    user.Percentage = percentage;
                     MessageBox.Show($"\nПроцент правильных ответов: {percentage}%");
 
                     string diagnosis = Diagnosis.MakeDiagnosis(percentage);
+                    user.Diagnosis = diagnosis;
                     MessageBox.Show($"{user.FullName}, ваш диагноз: {diagnosis}");
 
-                    user.Percentage = percentage;
-                    user.Diagnosis = diagnosis;
-
-                    string text = $"{user.FullName}|{user.Percentage}|{user.Diagnosis}";
-
-                    userStorage.Users.Add(user);
-                    UsersResultStorage.SaveResult("results.txt", text);
+                    userStorage.AddResult(user);
                     RestartGame();
                     return;
                 }
             }
             else
             {
+                if (questionsStorage.Questions.Count == 0)
+                {
+                    MessageBox.Show("Добавьте хотя бы 1 вопрос!");
+                    return;
+                }
+                if (!InputChecker.IsCorrectInput(userAnswerTextBox.Text))
+                {
+                    MessageBox.Show("ФИО не может быть пустым!");
+                    userAnswerTextBox.Clear();
+                    return;
+                }
+                
 
                 user.FullName = userAnswerTextBox.Text;
+                questions = questionsStorage.GetQuestions();
                 isGameStarted = true;
                 questionNumberLabel.Visible = true;
             }
@@ -100,7 +105,7 @@ namespace GeniusIdiotWindowsFormsApp
 
         private void buttonResults_Click(object sender, EventArgs e)
         {
-            ResultsForm resultsForm = new ResultsForm(userStorage.Users);
+            ResultsForm resultsForm = new ResultsForm(userStorage.GetResults());
             resultsForm.Show();
         }
 
@@ -111,14 +116,11 @@ namespace GeniusIdiotWindowsFormsApp
         }
         private void RestartGame()
         {
-            string pathResults = @"results.txt";
-            userStorage = new UsersResultStorage(pathResults);
+            userStorage = new UsersResultStorage();
 
-            string pathQuestions = @"questions.txt";
-            questionsStorage = new QuestionsStorage(pathQuestions);
+            questionsStorage = new QuestionsStorage();
 
-            questions = QuestionsStorage.GetQuestions(questionsStorage);
-            copiedQuestions = QuestionsStorage.GetQuestions(questionsStorage);
+            questions = questionsStorage.GetQuestions();
 
             questionNumberLabel.Visible = false;
             questionTextLabel.Text = "Введите ваше ФИО";
@@ -137,7 +139,7 @@ namespace GeniusIdiotWindowsFormsApp
 
         private void показатьРезультатыВикториыToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            ResultsForm resultsForm = new ResultsForm(userStorage.Users);
+            ResultsForm resultsForm = new ResultsForm(userStorage.GetResults());
             resultsForm.ShowDialog();
         }
 

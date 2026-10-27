@@ -3,15 +3,17 @@ using System.Collections.Generic;
 using System.Text;
 using ClassLibrary;
 using GeniusIdiotConsoleApp;
+using Newtonsoft.Json;
 
 namespace ClassLibrary
 {
     public class QuestionsStorage
     {
         public List<Question> Questions = new List<Question>();
-        public QuestionsStorage(string pathQuestions)
+        private string Path = "questions.json";
+        public QuestionsStorage()
         {
-            if (!File.Exists(pathQuestions))
+            if (!File.Exists(Path))
             {
                 string[] questions =
                 {
@@ -26,49 +28,38 @@ namespace ClassLibrary
                 for (int i = 0; i < questions.Length; i++)
                 {
                     Question question = new Question(questions[i], answers[i]);
+                    
                     Questions.Add(question);
-
-                    FileSystem.Write(pathQuestions, $"{questions[i]}|{answers[i]}", true);
                 }
             }
             else
             {
-
-                string s = FileSystem.Read(pathQuestions);
-                string[] ss = s.Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries);
-                foreach (string line in ss)
-                {
-                    string[] textAndAnswer = line.Split('|', StringSplitOptions.RemoveEmptyEntries);
-                    string textQuestion = textAndAnswer[0];
-                    string answer = textAndAnswer[1].Trim();
-                    Question question = new Question(textQuestion, int.Parse(answer));
-                    Questions.Add(question);
-
-                }
+                var jsonData = FileSystem.Read(Path);
+                Questions = JsonConvert.DeserializeObject<List<Question>>(jsonData) ?? new List<Question>();
             }
 
         }
         
-        public void AddQuestion(string pathQuestions, string textQuestion, int answer)
+        public void AddQuestion(Question question)
         {
-            FileSystem.Write(pathQuestions, $"{textQuestion}|{answer}", true);
-
-            Question newQuestion = new Question(textQuestion, answer);
-            Questions.Add(newQuestion);
+            Questions.Add(question);
+            Save();
         }
-        public void RemoveQuestion(string pathQuestions, int input)
+        public void RemoveQuestion(int input)
         {
             int index = input - 1;
-            string questionAndAnswer = $"{Questions[index].QuestionText}|{Questions[index].Answer}";
-            FileSystem.Remove(pathQuestions, questionAndAnswer);
-            Questions.Remove(Questions[index]);
-
+            Questions.RemoveAt(index);
+            Save();
         }
-        
-        public static List<Question> GetQuestions(QuestionsStorage questionsStorage)
+        public void Save()
+        {
+            var jsonData = JsonConvert.SerializeObject(Questions, Formatting.Indented);
+            FileSystem.Write(Path, jsonData, false);
+        }
+        public List<Question> GetQuestions()
         {
             var questionsCopy = new List<Question>();
-            foreach (var question in questionsStorage.Questions)
+            foreach (var question in Questions)
             {
                 questionsCopy.Add(question);
             }
